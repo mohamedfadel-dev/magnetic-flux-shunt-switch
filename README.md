@@ -2,7 +2,7 @@
 
 Portfolio case study presented as relevant prior work for mu-metal switching applications.
 
-## Past Work Summary
+##  Work Summary
 
 This project is framed as a completed concept-design engagement for a compact magnetic switching mechanism using mu-metal. The work focused on selecting the magnetic architecture, quantifying switching behavior, checking reliability margins, and preparing a prototype-oriented recommendation package.
 
