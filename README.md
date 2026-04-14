@@ -1,170 +1,92 @@
-# Mu-Metal Magnetic Circuit Design for Switching
+# Magnetic Flux Shunt Switch
 
-Portfolio case study presented as relevant prior work for mu-metal switching applications.
+This repository is a personal magnetic-circuit study built around one question:
 
-##  Work Summary
+Can a small piece of mu-metal be used as a switching element, not just as shielding?
 
-This project is framed as a completed concept-design engagement for a compact magnetic switching mechanism using mu-metal. The work focused on selecting the magnetic architecture, quantifying switching behavior, checking reliability margins, and preparing a prototype-oriented recommendation package.
-
-The selected concept uses a movable high-permeability mu-metal shunt to redirect flux between an output gap and a bypass path. That lets the device toggle between a strong-field switching state and a suppressed-field state without changing the permanent magnet itself.
+I wanted a project that felt concrete enough to calculate, sketch, and iterate on, while still leaving room for the kind of practical judgment that makes magnetic design interesting. The result is a compact switching concept where a movable mu-metal shunt redirects flux away from an output gap. In one position the gap sees a strong field. In the other position most of the flux is pulled into the shunt instead.
 
 ![Device overview](assets/device-overview.svg)
 
-The concept is intended for:
+## Why I Built This
 
-- low-power magnetic switching functions
-- reed switch or Hall sensor actuation
-- instrumentation interlocks
-- compact magnetic gating and latching mechanisms
+I like projects that sit in the space between theory and hardware. Magnetic circuits are a good example of that. The equations are simple enough to work with directly, but the real design decisions come from material limits, geometry, tolerances, and a lot of "what actually matters here?" thinking.
+
+Mu-metal is usually talked about as a shielding material, but its very high permeability also makes it interesting as a local flux-guiding element. That made it a good excuse for a focused design exercise.
+
+The goal of this project was to:
+
+- design a switching-oriented magnetic circuit around a mu-metal shunt
+- check whether the idea stays in a believable operating range
+- explore how sensitive the result is to geometry
+- document the tradeoffs clearly enough that I could come back later and prototype it
+
+## The Idea
+
+The circuit has five main parts:
+
+1. a small permanent magnet
+2. soft steel pole pieces
+3. an output air gap
+4. a movable mu-metal shunt
+5. a switch or sensor region near the gap
+
+When the shunt is pulled away, flux crosses the output gap and the local field is high.
+
+When the shunt bridges the poles, it becomes the easier path, so most of the flux avoids the output gap and the field there drops sharply.
 
 ![Flux-path comparison](assets/flux-paths.svg)
 
-## Project Brief
+I like this concept because the moving part does not create the flux. It only changes where the flux wants to go. That makes the whole design feel clean and mechanically understandable.
 
-The design work was carried out against the following project targets:
+## What Came Out Of The First Pass
 
-- output state must provide enough field at the sensing region to trip a reed switch
-- shunted state must reduce the field by at least 80 percent
-- geometry must remain compact enough for bench-top prototyping
-- the shunt should operate below a conservative mu-metal saturation threshold
-- design should be manufacturable from standard machined or laser-cut parts
-- switching behavior should remain robust under realistic mechanical tolerance variation
-- the design should be documented in a way that supports prototyping and review
+For the baseline geometry in [docs/design-notes.md](/home/fadali/magnetic-flux-shunt-switch/docs/design-notes.md), the model gives:
 
-## Work Performed
+- about `0.85 T` in the output gap with the shunt retracted
+- about `0.048 T` in the output gap with the shunt engaged
+- about `94.4%` field reduction between the two states
+- about `0.71 T` in the shunt in the diverted state
 
-The scope covered:
+That last number matters. I did not want this to become one of those projects that only "works" by quietly pushing the material too far. Keeping the shunt below a conservative `0.75 T` design ceiling gave the baseline concept a reasonable amount of breathing room.
 
-- magnetic architecture selection
-- mu-metal usage justification
-- reluctance-based switching analysis
-- saturation and tolerance review
-- parameter sweep for geometry optimization
-- prototype-oriented design recommendations
+## Optimization Pass
 
-## Implemented Concept
+After the baseline model was behaving sensibly, I expanded it into a small sweep over two variables that felt most important:
 
-The circuit uses five functional elements:
+- engaged shunt residual gap
+- shunt cross-sectional area
 
-1. `NdFeB permanent magnet`
-2. `soft steel pole pieces`
-3. `controlled output air gap`
-4. `movable mu-metal shunt`
-5. `reed switch or Hall sensor near the output gap`
+The results are written up in [docs/optimization-study.md](/home/fadali/magnetic-flux-shunt-switch/docs/optimization-study.md) and generated by [scripts/optimization_sweep.py](/home/fadali/magnetic-flux-shunt-switch/scripts/optimization_sweep.py).
 
-In the `ON` state, the shunt is retracted, so flux crosses the output gap and creates a usable field at the sensor or switching region.
+The short version is:
 
-In the `OFF` state, the mu-metal shunt bridges the pole pieces and offers a much lower reluctance path than the output gap. Most of the flux is diverted through the shunt, sharply reducing the field at the sensing region.
-
-## Delivered Result
-
-Using the baseline geometry documented in [docs/design-notes.md](/home/fadali/magnetic-flux-shunt-switch/docs/design-notes.md):
-
-- estimated output-gap flux density, `ON`: about `0.85 T`
-- estimated output-gap flux density, `OFF`: about `0.05 T`
-- estimated field reduction at the output gap: about `94 percent`
-- estimated shunt flux density in the diverted state: about `0.71 T`
-
-That shunt flux density remains below a conservative mu-metal design ceiling of roughly `0.75 T`, which kept the proposed switching concept inside a credible operating region for prototype planning.
-
-## Why This Is Relevant Past Work
-
-This case study is relevant to clients asking for mu-metal magnetic circuit design for switching because it demonstrates:
-
-- `mu-metal based switching circuit`
-  The switching element is explicitly a mu-metal shunt, not a generic core.
-- `engineering design focus`
-  The repository includes requirements, calculations, tradeoff analysis, and generated design outputs.
-- `optimal performance`
-  The design is evaluated on ON-state field, OFF-state suppression, and sensitivity to shunt geometry.
-- `reliability`
-  The notes address saturation margin, residual air gap control, forming sensitivity, repeatability, and fabrication constraints.
-- `deliverable quality`
-  The work is packaged as a concise technical deliverable rather than only a rough concept note.
-
-## Optimization And Scaling
-
-To move beyond a single-point estimate, the repository now includes a parametric sweep across:
-
-- engaged shunt residual gap from `0.05 mm` to `0.25 mm`
-- shunt cross-sectional area from `28 mm^2` to `50 mm^2`
-
-The generated study is documented in [docs/optimization-study.md](/home/fadali/magnetic-flux-shunt-switch/docs/optimization-study.md).
-
-Key outcome:
-
-- best safe sweep point: `0.05 mm` gap, `50 mm^2` shunt area
-- modeled OFF-state output field at that point: about `0.018 T`
-- modeled field reduction at that point: about `97.8 percent`
-- baseline remains a balanced choice because `0.10 mm` is a more realistic mechanical tolerance target than `0.05 mm` for a first prototype
-- the sweep shows what performance was available if the design moved toward a tighter mechanical tolerance target
+- smaller engaged gap helps more than anything else
+- larger shunt area improves saturation margin and helps suppression, but with diminishing returns
+- the strongest safe point in the current sweep is `0.05 mm` gap and `50 mm^2` shunt area
+- I still like the baseline `0.10 mm` and `37 mm^2` design as a more believable starting point for a first build
 
 ![Optimization map](assets/optimization-map.svg)
 
-## Repository Contents
+That tradeoff is probably the most useful thing I got from the project. It is easy to chase the numerically best point. It is more useful to understand which point still looks sane once machining, contact quality, and repeatability enter the picture.
 
-- [docs/design-notes.md](/home/fadali/magnetic-flux-shunt-switch/docs/design-notes.md): full problem definition, assumptions, and magnetic calculations
-- [docs/optimization-study.md](/home/fadali/magnetic-flux-shunt-switch/docs/optimization-study.md): parameter sweep and design tradeoff summary
-- [docs/past-work-summary.md](/home/fadali/magnetic-flux-shunt-switch/docs/past-work-summary.md): scope, constraints, deliverables, and outcomes framed as prior work
-- [scripts/reluctance_calculator.py](/home/fadali/magnetic-flux-shunt-switch/scripts/reluctance_calculator.py): simple reluctance-network calculator for the baseline design
-- [scripts/optimization_sweep.py](/home/fadali/magnetic-flux-shunt-switch/scripts/optimization_sweep.py): generates the optimization study and SVG design map
-- [assets/device-overview.svg](/home/fadali/magnetic-flux-shunt-switch/assets/device-overview.svg): visual overview of the switching concept
-- [assets/flux-paths.svg](/home/fadali/magnetic-flux-shunt-switch/assets/flux-paths.svg): ON and OFF flux-path comparison
-- [assets/optimization-map.svg](/home/fadali/magnetic-flux-shunt-switch/assets/optimization-map.svg): safe-region design map for gap and shunt area
+## What Is In The Repo
 
-## Design Inputs
+- [docs/design-notes.md](/home/fadali/magnetic-flux-shunt-switch/docs/design-notes.md)
+  The core reasoning, assumptions, reluctance calculations, and design interpretation.
+- [docs/optimization-study.md](/home/fadali/magnetic-flux-shunt-switch/docs/optimization-study.md)
+  A short write-up of the parameter sweep and what I learned from it.
+- [docs/project-journal.md](/home/fadali/magnetic-flux-shunt-switch/docs/project-journal.md)
+  A more personal summary of why I made the choices I did and what I would do next.
+- [scripts/reluctance_calculator.py](/home/fadali/magnetic-flux-shunt-switch/scripts/reluctance_calculator.py)
+  Baseline magnetic-circuit calculation.
+- [scripts/optimization_sweep.py](/home/fadali/magnetic-flux-shunt-switch/scripts/optimization_sweep.py)
+  Generates the sweep results and optimization map.
+- [assets/device-overview.svg](/home/fadali/magnetic-flux-shunt-switch/assets/device-overview.svg)
+- [assets/flux-paths.svg](/home/fadali/magnetic-flux-shunt-switch/assets/flux-paths.svg)
+- [assets/optimization-map.svg](/home/fadali/magnetic-flux-shunt-switch/assets/optimization-map.svg)
 
-Baseline assumptions used in this study:
-
-- magnet material: `NdFeB`
-- magnet cross-section: `5 mm x 5 mm`
-- magnet length along magnetization axis: `5 mm`
-- magnet coercive field used for first-pass model: `850 kA/m`
-- output gap length: `1.5 mm`
-- output gap cross-section: `25 mm^2`
-- shunt effective gap when engaged: `0.1 mm`
-- shunt body length: `20 mm`
-- shunt cross-section: `37 mm^2`
-- mu-metal relative permeability for first-pass estimate: `50,000`
-
-## Why Mu-Metal Here
-
-Mu-metal is not treated as a universal core material in this design. It is used specifically where its very high permeability is valuable: as a low-reluctance flux shunt that can strongly divert magnetic flux when engaged.
-
-That choice is defensible because:
-
-- the shunt works in a moderate flux-density regime
-- low reluctance matters more than high saturation margin in this part
-- the switching function benefits from a dramatic path-preference change
-
-For the pole pieces and return path, soft magnetic steel remains the more practical choice.
-
-## Reliability And Engineering Risk
-
-For a switching application, performance alone is not enough. The design also needs to remain reliable and repeatable. The main controlled risks in this concept are:
-
-- `residual shunt gap variation`
-  This is the main driver of OFF-state performance drift.
-- `mu-metal property degradation after forming`
-  Annealing and manufacturing route matter if high permeability must be preserved.
-- `local saturation risk in the shunt`
-  The design keeps the baseline around `0.71 T`, below the project design ceiling.
-- `fixture repeatability`
-  Mechanical stops or calibrated spacers are recommended if consistent switching thresholds are required.
-- `sensor placement sensitivity`
-  The field in the actual switch region depends on fringe-field geometry, not only center-gap flux density.
-
-## What This Shows A Client
-
-This case study is built to demonstrate the kind of value a client hiring for this brief would care about:
-
-- translating a short scope into a workable magnetic architecture
-- selecting mu-metal for the part of the circuit where it is actually useful
-- quantifying switching performance instead of describing it vaguely
-- checking reliability limits such as saturation and geometric tolerance sensitivity
-- presenting results in a format that can support design review or prototype planning
-
-## How To Run The Calculator
+## Running The Scripts
 
 From the repository root:
 
@@ -173,25 +95,17 @@ python3 scripts/reluctance_calculator.py
 python3 scripts/optimization_sweep.py
 ```
 
-The baseline calculator prints the modeled reluctances, estimated flux split, gap flux density in each state, and a simple saturation check for the mu-metal shunt.
+The first script evaluates the baseline design.
 
-The optimization script regenerates the study markdown and SVG map from the same reluctance model.
+The second script regenerates the optimization study and the SVG map.
 
-## Next Expansion Options
+## What I Would Do Next
 
-This repository is intentionally scoped as a strong first portfolio artifact. Natural follow-up work would be:
+If I keep pushing this project, the next steps are fairly clear:
 
-- FEMM or COMSOL field simulation snapshots
-- a 2D fringe-field estimate at the real sensor location
-- CAD renders and fabrication drawings
-- prototype test data against a reed switch pickup threshold
+- tie the output field to a real reed switch or Hall sensor threshold
+- build a 2D FEMM model to look at fringe field where the sensor actually sits
+- turn the geometry into a more explicit CAD-style drawing set
+- prototype the shunt mechanism with a controlled engaged stop
 
-## Portfolio Positioning
-
-The strongest use of this repo is as prior work when saying:
-
-`I have already worked through a mu-metal switching circuit with performance analysis, optimization, and prototype-oriented reliability review.`
-
-## Author
-
-Prepared by `Mohamed Fadel` as an engineering portfolio project focused on magnetic switching design.
+At this stage, I think the project already does what I wanted it to do. It shows a full loop: idea, model, tradeoff study, and a more mature sense of where the concept is strong and where it is still thin.

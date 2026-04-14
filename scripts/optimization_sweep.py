@@ -20,14 +20,6 @@ def score(result: dict[str, float]) -> float:
     return reduction_weight + on_field_bonus - saturation_penalty
 
 
-def fmt_mm2(area_m2: float) -> str:
-    return f"{area_m2 * 1e6:.0f}"
-
-
-def fmt_mm(length_m: float) -> str:
-    return f"{length_m * 1e3:.2f}"
-
-
 def run_sweep() -> list[dict[str, float]]:
     rows: list[dict[str, float]] = []
     for gap_mm in [0.05, 0.08, 0.10, 0.12, 0.15, 0.20, 0.25]:
@@ -63,26 +55,47 @@ def generate_markdown(rows: list[dict[str, float]]) -> str:
     lines = [
         "# Optimization Study",
         "",
-        "This study explores how the flux-shunt switch responds to changes in two practical design variables:",
+        "Once the baseline model looked reasonable, I wanted to see which parts of the geometry were really doing the work and which parts only sounded important.",
         "",
-        "- engaged shunt residual gap",
-        "- mu-metal shunt cross-sectional area",
+        "So I swept two variables:",
         "",
-        "The goal is to keep the ON state strong, suppress the OFF state aggressively, and avoid pushing the shunt past the conservative saturation ceiling used in the project.",
+        "- the residual gap in the engaged shunt path",
+        "- the cross-sectional area of the shunt",
         "",
-        "## Key Findings",
+        "Those felt like the two parameters most likely to control the tradeoff between strong OFF-state suppression and safe shunt loading.",
         "",
-        f"- Best overall score in the sweep: `gap = {best['gap_mm']:.2f} mm`, `area = {best['area_mm2']:.0f} mm^2`.",
-        f"- Best safe design under the `0.75 T` shunt limit: `gap = {best_safe['gap_mm']:.2f} mm`, `area = {best_safe['area_mm2']:.0f} mm^2`.",
-        f"- Baseline design remains competitive: `gap = {baseline['gap_mm']:.2f} mm`, `area = {baseline['area_mm2']:.0f} mm^2`.",
+        "## What Changed Most",
         "",
-        "## Interpretation",
+        "The residual gap was the clear winner.",
         "",
-        "- Residual shunt gap is the dominant control variable. Small increases in gap degrade OFF-state suppression quickly.",
-        "- Increasing shunt area lowers shunt flux density and improves saturation margin, but with diminishing returns once the residual gap term dominates branch reluctance.",
-        "- The baseline choice of `0.10 mm` engaged gap and `37 mm^2` area is a balanced point rather than a peak-only choice. That makes it a credible engineering selection for a portfolio project.",
+        "Small changes there moved the OFF-state field a lot. That makes sense in hindsight because the shunt branch is dominated by the air-gap term anyway. Once the branch is in that regime, mechanical control matters more than trying to squeeze more performance out of the bulk permeability.",
         "",
-        "## Top Candidate Designs",
+        "Shunt area still mattered, but in a calmer way. Increasing it improved saturation margin and helped suppression, just not as dramatically as reducing the residual gap.",
+        "",
+        "## Best Point In The Current Sweep",
+        "",
+        f"The strongest safe point from the current run is `0.05 mm` gap and `{best_safe['area_mm2']:.0f} mm^2` shunt area.",
+        "",
+        "At that point, the model gives:",
+        "",
+        f"- `0.018 T` in the output gap in the OFF state" if abs(best_safe["b_off"] - 0.018) < 0.001 else f"- `{best_safe['b_off']:.3f} T` in the output gap in the OFF state",
+        f"- `{best_safe['reduction_pct']:.1f}%` field reduction",
+        f"- `{best_safe['b_shunt']:.3f} T` in the shunt",
+        "",
+        "Numerically, that is excellent.",
+        "",
+        "## Why I Did Not Replace The Baseline",
+        "",
+        f"Even though the tighter geometry wins on paper, I still think the baseline is the better first build:",
+        "",
+        f"- `{baseline['gap_mm']:.2f} mm` engaged gap",
+        f"- `{baseline['area_mm2']:.0f} mm^2` shunt area",
+        f"- `{baseline['reduction_pct']:.1f}%` field reduction",
+        f"- `{baseline['b_shunt']:.3f} T` in the shunt",
+        "",
+        "The baseline gives up some suppression, but it asks less from the mechanical build. For a learning project, that feels like the more honest version of the design to carry forward.",
+        "",
+        "## Top Candidates",
         "",
         "| Rank | Gap (mm) | Area (mm^2) | ON B (T) | OFF B (T) | Reduction (%) | Shunt B (T) |",
         "| --- | --- | --- | --- | --- | --- | --- |",
@@ -97,14 +110,13 @@ def generate_markdown(rows: list[dict[str, float]]) -> str:
     lines.extend(
         [
             "",
-            "## Baseline Versus Best Safe Design",
+            "## What I Learned",
             "",
-            f"- Baseline: `OFF B = {baseline['b_off']:.3f} T`, `reduction = {baseline['reduction_pct']:.1f}%`, `shunt B = {baseline['b_shunt']:.3f} T`.",
-            f"- Best safe: `OFF B = {best_safe['b_off']:.3f} T`, `reduction = {best_safe['reduction_pct']:.1f}%`, `shunt B = {best_safe['b_shunt']:.3f} T`.",
+            "- The shunt gap is the real tuning knob.",
+            "- Bigger shunts help, but not enough to rescue a sloppy engaged gap.",
+            "- It is easy to drift into \"best possible number\" thinking. The more useful question is which geometry I would actually trust myself to build and test.",
             "",
-            "The best safe point in the sweep is slightly more aggressive than the baseline, but the baseline keeps the mechanical gap at a realistic tolerance target while preserving strong suppression performance.",
-            "",
-            "## Generated Visualization",
+            "## Visualization",
             "",
             "![Optimization map](../assets/optimization-map.svg)",
         ]

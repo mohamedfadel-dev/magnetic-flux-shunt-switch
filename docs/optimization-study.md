@@ -1,25 +1,46 @@
 # Optimization Study
 
-This study explores how the flux-shunt switch responds to changes in two practical design variables:
+Once the baseline model looked reasonable, I wanted to see which parts of the geometry were really doing the work and which parts only sounded important.
 
-- engaged shunt residual gap
-- mu-metal shunt cross-sectional area
+So I swept two variables:
 
-The goal is to keep the ON state strong, suppress the OFF state aggressively, and avoid pushing the shunt past the conservative saturation ceiling used in the project.
+- the residual gap in the engaged shunt path
+- the cross-sectional area of the shunt
 
-## Key Findings
+Those felt like the two parameters most likely to control the tradeoff between strong OFF-state suppression and safe shunt loading.
 
-- Best overall score in the sweep: `gap = 0.05 mm`, `area = 50 mm^2`.
-- Best safe design under the `0.75 T` shunt limit: `gap = 0.05 mm`, `area = 50 mm^2`.
-- Baseline design remains competitive: `gap = 0.10 mm`, `area = 37 mm^2`.
+## What Changed Most
 
-## Interpretation
+The residual gap was the clear winner.
 
-- Residual shunt gap is the dominant control variable. Small increases in gap degrade OFF-state suppression quickly.
-- Increasing shunt area lowers shunt flux density and improves saturation margin, but with diminishing returns once the residual gap term dominates branch reluctance.
-- The baseline choice of `0.10 mm` engaged gap and `37 mm^2` area is a balanced point rather than a peak-only choice. That makes it a credible engineering selection for a portfolio project.
+Small changes there moved the OFF-state field a lot. That makes sense in hindsight because the shunt branch is dominated by the air-gap term anyway. Once the branch is in that regime, mechanical control matters more than trying to squeeze more performance out of the bulk permeability.
 
-## Top Candidate Designs
+Shunt area still mattered, but in a calmer way. Increasing it improved saturation margin and helped suppression, just not as dramatically as reducing the residual gap.
+
+## Best Point In The Current Sweep
+
+The strongest safe point from the current run is `0.05 mm` gap and `50 mm^2` shunt area.
+
+At that point, the model gives:
+
+- `0.018 T` in the output gap in the OFF state
+- `97.8%` field reduction
+- `0.545 T` in the shunt
+
+Numerically, that is excellent.
+
+## Why I Did Not Replace The Baseline
+
+Even though the tighter geometry wins on paper, I still think the baseline is the better first build:
+
+- `0.10 mm` engaged gap
+- `37 mm^2` shunt area
+- `94.4%` field reduction
+- `0.711 T` in the shunt
+
+The baseline gives up some suppression, but it asks less from the mechanical build. For a learning project, that feels like the more honest version of the design to carry forward.
+
+## Top Candidates
 
 | Rank | Gap (mm) | Area (mm^2) | ON B (T) | OFF B (T) | Reduction (%) | Shunt B (T) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,13 +55,12 @@ The goal is to keep the ON state strong, suppress the OFF state aggressively, an
 | 9 | 0.08 | 37 | 0.849 | 0.039 | 95.5 | 0.719 |
 | 10 | 0.10 | 45 | 0.849 | 0.040 | 95.3 | 0.590 |
 
-## Baseline Versus Best Safe Design
+## What I Learned
 
-- Baseline: `OFF B = 0.048 T`, `reduction = 94.4%`, `shunt B = 0.711 T`.
-- Best safe: `OFF B = 0.018 T`, `reduction = 97.8%`, `shunt B = 0.545 T`.
+- The shunt gap is the real tuning knob.
+- Bigger shunts help, but not enough to rescue a sloppy engaged gap.
+- It is easy to drift into "best possible number" thinking. The more useful question is which geometry I would actually trust myself to build and test.
 
-The best safe point in the sweep is slightly more aggressive than the baseline, but the baseline keeps the mechanical gap at a realistic tolerance target while preserving strong suppression performance.
-
-## Generated Visualization
+## Visualization
 
 ![Optimization map](../assets/optimization-map.svg)
