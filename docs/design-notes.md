@@ -4,6 +4,8 @@
 
 Create a magnetic switching device in which the sensing field is controlled by changing the magnetic path rather than electrically energizing a coil. The desired output is a clear high-field state and low-field state at a compact output region suitable for a reed switch or Hall-effect sensor.
 
+This document serves as the technical backbone for a completed mu-metal switching-circuit case study.
+
 ## Functional Principle
 
 The switching element is a movable mu-metal shunt placed near the pole faces of a permanent-magnet circuit.
@@ -12,6 +14,8 @@ The switching element is a movable mu-metal shunt placed near the pole faces of 
 - When the shunt is `inserted`, the high-permeability shunt bridges the poles and bypasses the output gap.
 
 This is a reluctance-switching device. The moving element does not create flux. It changes which path the existing flux prefers.
+
+That distinction matters because it changes both the performance envelope and the manufacturing risks. The engineering problem is not only to create a strong magnetic path, but to make the path change repeatable and reliable.
 
 ## Baseline Geometry
 
@@ -32,6 +36,16 @@ First-pass dimensions used for this case study:
 | Steel path equivalent reluctance allowance | `R_steel` | `1.0e6 A/Wb` |
 
 The steel reluctance is included as a small but nonzero term so the model does not unrealistically treat the support structure as perfect.
+
+## Design Targets
+
+The baseline concept is judged against a practical set of switching-design targets:
+
+- high-field state should be comfortably above a plausible reed-switch actuation threshold
+- low-field state should show strong suppression relative to the ON state
+- mu-metal should remain below a conservative local flux-density limit
+- the concept should tolerate prototype-level manufacturing methods
+- the switching mechanism should be explainable in terms a client can review quickly
 
 ## Simplified Magnetic Network
 
@@ -197,6 +211,8 @@ Shunt flux density:
 
 That keeps the shunt below the conservative `0.75 T` design ceiling used in this study.
 
+This was treated as one of the main reliability gates in the concept. A design that only works by pushing mu-metal too close to its limit is not robust enough to recommend for a switching application without further verification.
+
 ## Design Interpretation
 
 The analysis leads to three useful engineering conclusions:
@@ -210,6 +226,14 @@ The shunt element benefits from very high permeability, but the larger return pa
 3. `Output field reduction is strong even with a simple mechanism.`
 A modestly moving shunt can create a large ratio between ON and OFF field at the sensing region.
 
+## Optimization Direction
+
+The follow-on sweep in [optimization-study.md](/home/fadali/magnetic-flux-shunt-switch/docs/optimization-study.md) confirms that:
+
+- reducing the engaged shunt residual gap is the strongest lever for improving OFF-state suppression
+- increasing shunt area mainly helps saturation margin and gives secondary suppression gains
+- the baseline `0.10 mm` gap and `37 mm^2` area is not the absolute optimum, but it is a more fabrication-tolerant choice than the tighter `0.05 mm` best-case option
+
 ## Practical Fabrication Notes
 
 - Use annealed mu-metal stock after final forming if possible.
@@ -217,6 +241,16 @@ A modestly moving shunt can create a large ratio between ON and OFF field at the
 - Keep engaged faces flat and parallel.
 - If vibration is expected, include a hard mechanical stop to control the residual gap.
 - If repeatability matters more than absolute minimum reluctance, design around a known thin spacer instead of relying on metal-to-metal contact.
+
+## Validation Strategy
+
+The recommended validation sequence after concept completion was:
+
+1. Verify sensor-side field threshold against an actual switch or Hall part number.
+2. Build a 2D field model to confirm fringe field in the real sensing location.
+3. Prototype the shunt geometry with controlled engaged-stop spacing.
+4. Measure ON and OFF switching repeatability over repeated cycles.
+5. Compare prototype behavior against the reluctance model and update the geometry if needed.
 
 ## Recommended Next Steps
 
