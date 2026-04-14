@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#f3efe7"/>
+  <text x="60" y="70" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#1f2a44">
+    Magnetic Flux Shunt Switching Device
+  </text>
+  <text x="60" y="105" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#4d5c73">
+    Permanent magnet source, steel pole pieces, output gap, and movable mu-metal shunt
+  </text>
+
+  <rect x="120" y="210" width="130" height="120" rx="10" fill="#d94f3d"/>
+  <text x="145" y="275" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#ffffff">NdFeB</text>
+
+  <rect x="250" y="235" width="165" height="26" fill="#73808f"/>
+  <rect x="250" y="279" width="165" height="26" fill="#73808f"/>
+  <text x="285" y="205" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#334155">Steel poles</text>
+
+  <rect x="415" y="235" width="90" height="26" fill="#73808f"/>
+  <rect x="415" y="279" width="90" height="26" fill="#73808f"/>
+  <rect x="505" y="235" width="28" height="70" fill="#f3efe7" stroke="#1f2a44" stroke-width="2"/>
+  <text x="495" y="210" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#334155">Output gap</text>
+
+  <rect x="598" y="196" width="220" height="36" rx="8" fill="#9fb3c8" stroke="#445468" stroke-width="2"/>
+  <text x="621" y="220" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#1f2a44">Movable mu-metal shunt</text>
+
+  <line x1="709" y1="232" x2="709" y2="236" stroke="#445468" stroke-width="2"/>
+  <line x1="709" y1="232" x2="709" y2="279" stroke="#445468" stroke-width="2" stroke-dasharray="6 5"/>
+
+  <rect x="640" y="364" width="170" height="64" rx="8" fill="#ffffff" stroke="#445468" stroke-width="2"/>
+  <text x="677" y="403" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#1f2a44">Reed / Hall</text>
+
+  <path d="M 220 190 C 360 115, 545 115, 680 170" fill="none" stroke="#2a7f62" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="676,158 701,171 674,180" fill="#2a7f62"/>
+
+  <path d="M 676 345 C 540 400, 355 410, 220 350" fill="none" stroke="#2a7f62" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="228,339 203,349 229,362" fill="#2a7f62"/>
+
+  <text x="170" y="165" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#2a7f62">Main flux path</text>
+  <text x="585" y="454" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#334155">
+    Sensor placed near gap fringe field
+  </text>
+</svg>
